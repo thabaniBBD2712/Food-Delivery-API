@@ -30,3 +30,9 @@ C:\Users\bbdnet2848\Desktop\Level_Ups\C#_Levelup\Food-Delivery-API\FoodDeliveryA
 C:\Users\bbdnet2848\Desktop\Level_Ups\C#_Levelup\Food-Delivery-API\FoodDeliveryAPI\FoodDeliveryAPI\obj\Debug\net6.0\FoodDeliveryAPI.pdb
 C:\Users\bbdnet2848\Desktop\Level_Ups\C#_Levelup\Food-Delivery-API\FoodDeliveryAPI\FoodDeliveryAPI\obj\Debug\net6.0\FoodDeliveryAPI.genruntimeconfig.cache
 C:\Users\bbdnet2848\Desktop\Level_Ups\C#_Levelup\Food-Delivery-API\FoodDeliveryAPI\FoodDeliveryAPI\obj\Debug\net6.0\ref\FoodDeliveryAPI.dll
+C:\Users\bbdnet2848\Desktop\Level_Ups\C#_Levelup\Food-Delivery-API\FoodDeliveryAPI\FoodDeliveryAPI\bin\Debug\net6.0\System.Data.SqlClient.dll
+C:\Users\bbdnet2848\Desktop\Level_Ups\C#_Levelup\Food-Delivery-API\FoodDeliveryAPI\FoodDeliveryAPI\bin\Debug\net6.0\runtimes\win-arm64\native\sni.dll
+C:\Users\bbdnet2848\Desktop\Level_Ups\C#_Levelup\Food-Delivery-API\FoodDeliveryAPI\FoodDeliveryAPI\bin\Debug\net6.0\runtimes\win-x64\native\sni.dll
+C:\Users\bbdnet2848\Desktop\Level_Ups\C#_Levelup\Food-Delivery-API\FoodDeliveryAPI\FoodDeliveryAPI\bin\Debug\net6.0\runtimes\win-x86\native\sni.dll
+C:\Users\bbdnet2848\Desktop\Level_Ups\C#_Levelup\Food-Delivery-API\FoodDeliveryAPI\FoodDeliveryAPI\bin\Debug\net6.0\runtimes\unix\lib\netcoreapp2.1\System.Data.SqlClient.dll
+C:\Users\bbdnet2848\Desktop\Level_Ups\C#_Levelup\Food-Delivery-API\FoodDeliveryAPI\FoodDeliveryAPI\bin\Debug\net6.0\runtimes\win\lib\netcoreapp2.1\System.Data.SqlClient.dll
