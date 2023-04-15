@@ -234,7 +234,7 @@ INSERT INTO DeliveryPersoneel(personeelName, personeelContactNumber, vehicleRegi
 ('Sherye Rolse', '0244582160', 'AF82LZKV'),
 ('Laural Goldhill', '0022525827', 'AC69VKXW');
 
-INSERT INTO [User](username, userContactNumber) VALUES
+INSERT INTO [AppUser](username, userContactNumber) VALUES
 ('rtrillow0', '0738807747'),
 ('jcarefull1', '0235441537'),
 ('rfritz2', '0325846070'),
