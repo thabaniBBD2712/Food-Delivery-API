@@ -1,6 +1,0 @@
-C:\Users\bbdnet2848\Desktop\Level_Ups\C#_Levelup\Food-Delivery-API\FoodDeliveryAPI\FoodDB\bin\Debug\FoodDB.dacpac
-C:\Users\bbdnet2848\Desktop\Level_Ups\C#_Levelup\Food-Delivery-API\FoodDeliveryAPI\FoodDB\bin\Debug\FoodDB.dll
-C:\Users\bbdnet2848\Desktop\Level_Ups\C#_Levelup\Food-Delivery-API\FoodDeliveryAPI\FoodDB\bin\Debug\FoodDB.pdb
-C:\Users\bbdnet2848\Desktop\Level_Ups\C#_Levelup\Food-Delivery-API\FoodDeliveryAPI\FoodDB\obj\Debug\FoodDB.sqlproj.AssemblyReference.cache
-C:\Users\bbdnet2848\Desktop\Level_Ups\C#_Levelup\Food-Delivery-API\FoodDeliveryAPI\FoodDB\obj\Debug\FoodDB.dll
-C:\Users\bbdnet2848\Desktop\Level_Ups\C#_Levelup\Food-Delivery-API\FoodDeliveryAPI\FoodDB\obj\Debug\FoodDB.pdb
