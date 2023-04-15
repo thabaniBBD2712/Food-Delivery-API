@@ -28,7 +28,7 @@ namespace FoodDeliveryAPI.Controllers
             List<Restaurant> lstRestaurants = new List<Restaurant>();
             // Retrieve the connection string from IConfiguration
             string connectionString = _configuration.GetConnectionString("FoodDB");
-            List<WeatherForecast> weatherForecasts = new List<WeatherForecast>();
+            
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 connection.Open();
