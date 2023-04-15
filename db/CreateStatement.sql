@@ -97,6 +97,23 @@ CREATE TABLE [DeliveryPersoneel] (
 )
 GO
 
+CREATE VIEW [ItemView] AS
+	SELECT I.restaurantId, I.itemPrice, II.itemName, II.itemDescription, IC.itemCategoryName, IST.itemStatusName 
+	FROM [Item] I 
+	JOIN [ItemInformation] II	ON I.itemInformationId = II.itemInformationId
+	JOIN [ItemCategory]	IC		ON II.itemInformationId = IC.itemCategoryId
+	JOIN [ItemStatus] IST		ON II.itemStatusId = IST.itemStatusId
+GO
+
+CREATE PROCEDURE [PersistItem] 
+	@itemId integer,
+	@restaurantId integer,
+	@itemSatusID integer,
+	@itemCategoryID integer,
+	@itemInformationID integer,
+	@itemPrice money
+
+
 ALTER TABLE [Restaurant] ADD FOREIGN KEY ([restaurantAddress]) REFERENCES [Address] ([addressId])
 GO
 
