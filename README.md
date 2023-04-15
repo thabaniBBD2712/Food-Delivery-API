@@ -5,7 +5,7 @@ A food delivery API (Application Programming Interface) is a software interface 
 
 ## Prerequisites
 * dotnet version 6^
-* C# version ?? (idk)
+* C# version 10
 
 ## Developing
 Open terminal and execute `dotnet restore` to install dependencies <br/>
@@ -16,12 +16,13 @@ If using VisualStudio, make sure to open `FoodDeliveryAPI.csproj` as the project
 2. Run script `db\CreateStatement.sql`
 
 ## Running
-Open terminal and execute `dotnet run`
+Open terminal and execute `dotnet run`<br/>
+Navigate to [swagger](http://localhost:5263/swagger/index.html) for documentation :)
 
 ## Authors
-* Anne-Mien Carr
-* Hewitt Nyambalo
-* Kyle Pottinger
+* [Anne-Mien Carr](https://github.com/AnneMienBBD)
+* [Hewitt Nyambalo](https://github.com/hewitt-BBD)
+* [Kyle Pottinger](https://github.com/Kyle-Pottinger)
 * [Thabani Nkonde](https://github.com/thabaniBBD2712)
 * [Tlholo Koma](https://github.com/Tlholo-Koma)
 * [Willa Lyle](https://github.com/willacharlotte)
