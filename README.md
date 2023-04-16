@@ -5,7 +5,7 @@ A food delivery API (Application Programming Interface) is a software interface 
 
 ## Prerequisites
 * dotnet version 6^
-* C# version 10
+* C# version 10^
 
 ## Developing
 Open terminal and execute `dotnet restore` to install dependencies <br/>
@@ -13,7 +13,8 @@ If using VisualStudio, make sure to open `FoodDeliveryAPI.csproj` as the project
 
 ### Initialising DB
 1. Open your favourite SQL Server manager and connect to `(localdb)\MSSQLLocalDB` 
-2. Run script `db\CreateStatement.sql`
+2. Run script `db\CreateStatement.sql` to create database and tables
+3. Run script `db\InsertStatements.sql` to populate database with mock data
 
 ## Running
 Open terminal and execute `dotnet run`<br/>
