@@ -18,7 +18,7 @@ CREATE TABLE [Restaurant] (
 )
 GO
 
-CREATE TABLE [User] (
+CREATE TABLE [AppUser] (
   [userId] integer PRIMARY KEY IDENTITY(1, 1),
   [username] varchar(50),
   [userContactNumber] varchar(10)
@@ -115,7 +115,7 @@ GO
 ALTER TABLE [Order] ADD FOREIGN KEY ([restaurantId]) REFERENCES [Restaurant] ([restaurantId])
 GO
 
-ALTER TABLE [Order] ADD FOREIGN KEY ([userId]) REFERENCES [User] ([userId])
+ALTER TABLE [Order] ADD FOREIGN KEY ([userId]) REFERENCES [AppUser] ([userId])
 GO
 
 ALTER TABLE [Order] ADD FOREIGN KEY ([personeelId]) REFERENCES [DeliveryPersoneel] ([personeelId])
