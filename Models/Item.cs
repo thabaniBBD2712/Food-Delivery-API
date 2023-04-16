@@ -1,6 +1,7 @@
 ﻿using Microsoft.SqlServer.Server;
 using System.Data;
 using System.Data.SqlClient;
+using System.Diagnostics;
 
 namespace FoodDeliveryAPI.Models
 {
@@ -14,12 +15,16 @@ namespace FoodDeliveryAPI.Models
         public static readonly string STATUS = "itemStatusName";
         public static readonly string CATEGORY = "itemCategoryName";
         public static readonly string DESCRIPTION = "itemDescription";
+        public static readonly string INFORMATION_ID = "itemInformationId";
+        public static readonly string CATEGORY_ID = "itemCategoryId";
+        public static readonly string STATUS_ID = "itemStatusId";
+        public static readonly string RESTAURANT_ID = "restaurantId";
 
         public long ID { get; set; } = -1;
         public double Price { get; set; } = 0.0;
 
         // Item Information
-        public int InformationID;
+        public int InformationID { get; set; }
         public string Name { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
 
@@ -37,14 +42,26 @@ namespace FoodDeliveryAPI.Models
 
         }
 
-        public Item(SqlDataReader record)
+        public Item(ref SqlDataReader record)
         {
-            ID = record.GetInt64(ITEMID);
-            Price = record.GetDouble(PRICE);
-            Name = record.GetString(NAME);
-            Description = record.GetString(DESCRIPTION);
-            Category = record.GetString(CATEGORY);
-            Status = record.GetString(STATUS);
+            try
+            {
+                ID = record.GetInt32(ITEMID);
+                InformationID = record.GetInt32(INFORMATION_ID);
+                StatusID = record.GetInt32(STATUS_ID);
+                RestaurantID = record.GetInt32(RESTAURANT_ID);
+                CategoryID = record.GetInt32(CATEGORY_ID);
+
+                Price = record.GetSqlMoney(1).ToDouble();
+                Name = record.GetString(NAME);
+                Description = record.GetString(DESCRIPTION);
+                Category = record.GetString(CATEGORY);
+                Status = record.GetString(STATUS);
+            } catch (Exception ex)
+            {
+                Console.WriteLine(ex.StackTrace);
+            }
+            
         }
 
     }

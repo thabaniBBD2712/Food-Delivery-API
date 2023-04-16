@@ -633,3 +633,5 @@ INSERT INTO OrderItem(orderItemQuantity, orderItemPrice, orderId, itemInformatio
 (4, 216.05, 33, 72),
 (3, 198.06, 43, 55),
 (5, 95.46, 7, 68);
+
+GO

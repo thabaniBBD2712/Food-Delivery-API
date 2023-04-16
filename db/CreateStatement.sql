@@ -18,7 +18,7 @@ CREATE TABLE [Restaurant] (
 )
 GO
 
-CREATE TABLE [User] (
+CREATE TABLE [AppUser] (
   [userId] integer PRIMARY KEY IDENTITY(1, 1),
   [username] varchar(50),
   [userContactNumber] varchar(10)
@@ -97,23 +97,6 @@ CREATE TABLE [DeliveryPersoneel] (
 )
 GO
 
-CREATE VIEW [ItemView] AS
-	SELECT I.restaurantId, I.itemPrice, II.itemName, II.itemDescription, IC.itemCategoryName, IST.itemStatusName 
-	FROM [Item] I 
-	JOIN [ItemInformation] II	ON I.itemInformationId = II.itemInformationId
-	JOIN [ItemCategory]	IC		ON II.itemInformationId = IC.itemCategoryId
-	JOIN [ItemStatus] IST		ON II.itemStatusId = IST.itemStatusId
-GO
-
-CREATE PROCEDURE [PersistItem] 
-	@itemId integer,
-	@restaurantId integer,
-	@itemSatusID integer,
-	@itemCategoryID integer,
-	@itemInformationID integer,
-	@itemPrice money
-
-
 ALTER TABLE [Restaurant] ADD FOREIGN KEY ([restaurantAddress]) REFERENCES [Address] ([addressId])
 GO
 
@@ -132,7 +115,7 @@ GO
 ALTER TABLE [Order] ADD FOREIGN KEY ([restaurantId]) REFERENCES [Restaurant] ([restaurantId])
 GO
 
-ALTER TABLE [Order] ADD FOREIGN KEY ([userId]) REFERENCES [User] ([userId])
+ALTER TABLE [Order] ADD FOREIGN KEY ([userId]) REFERENCES [AppUser] ([userId])
 GO
 
 ALTER TABLE [Order] ADD FOREIGN KEY ([personeelId]) REFERENCES [DeliveryPersoneel] ([personeelId])
