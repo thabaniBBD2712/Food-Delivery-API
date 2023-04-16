@@ -38,7 +38,7 @@ namespace FoodDeliveryAPI.Controllers
                             {
                                 orderItemId = reader.GetInt32("orderItemId"),
                                 orderItemQuantity = reader.GetInt32("orderItemQuantity"),
-                                orderItemPrice = reader.GetDouble("orderItemPrice"),
+                                orderItemPrice = reader.GetDecimal("orderItemPrice"),
                                 orderId = reader.GetInt32("orderId"),
                                 itemInformationId = reader.GetInt32("itemInformationId")                            
                             };
@@ -69,7 +69,7 @@ namespace FoodDeliveryAPI.Controllers
                             {
                                 orderItemId = reader.GetInt32("orderItemId"),
                                 orderItemQuantity = reader.GetInt32("orderItemQuantity"),
-                                orderItemPrice = reader.GetDouble("orderItemPrice"),
+                                orderItemPrice = reader.GetDecimal("orderItemPrice"),
                                 orderId = reader.GetInt32("orderId"),
                                 itemInformationId = reader.GetInt32("itemInformationId")                            
                             };
