@@ -6,6 +6,8 @@ using System.Data;
 
 namespace FoodDeliveryAPI.Controllers
 {
+  [Route("api/FoodDeliver.com/v1/[controller]")]
+  [ApiController]
   public class DeliveryPersonnelController : ControllerBase
   {
     private readonly IConfiguration _configuration;
@@ -81,41 +83,7 @@ namespace FoodDeliveryAPI.Controllers
       }
     }
 
-    [HttpGet("{id}", Name = "registrationNumber")]
-    public IActionResult GetByRegistrationNumber(int registrationNumber)
-    {
-      string connectionString = _configuration.GetConnectionString("FoodDB");
-
-      using (SqlConnection connection = new SqlConnection(connectionString))
-      {
-        connection.Open();
-        string sqlStatement = "SELECT * FROM DeliveryPersoneel WHERE vehicleRegistrationNumber = @registrationNumber";
-
-        using (SqlCommand command = new SqlCommand(sqlStatement))
-        {
-          command.Parameters.AddWithValue("registrationNumber", registrationNumber);
-          using (SqlDataReader reader = command.ExecuteReader())
-          {
-            if (reader.Read())
-            {
-              DeliveryPersonnel personnel = new DeliveryPersonnel();
-              personnel.PersonnelId = reader.GetInt32("personeelId");
-              personnel.PersonnelName = reader.GetString("personeelName");
-              personnel.PersonnelContactNumber = reader.GetString("personeelContactNumber");
-              personnel.VehicleRegistrationNumber = reader.GetInt32("vehicleRegistrationNumber");
-
-              return Ok(personnel);
-            }
-            else
-            {
-              return NotFound();
-            }
-          }
-        }
-      }
-
-    }
-  
+    [HttpPost]
     public IActionResult InsertPersonel([FromBody] DeliveryPersonnel personnel) 
     {
       if (personnel == null)
@@ -172,7 +140,8 @@ namespace FoodDeliveryAPI.Controllers
       }
       return Ok("Delivery personnel updated successfully");
     }
-  
+    [HttpDelete("{id}", Name = "deleteDeliveryPersonnel")]
+    
     public IActionResult DeletePersonnel(int id)
     {
       string connectionString = _configuration.GetConnectionString("FoodDB");
