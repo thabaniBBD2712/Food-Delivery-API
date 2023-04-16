@@ -10,14 +10,10 @@ namespace FoodDeliveryAPI.Controllers
     [ApiController]
     public class AddressController : ControllerBase
     {
-        private readonly IConfiguration _configuration;
-        private readonly ILogger<AddressController> _logger;
         private readonly SqlConnection _connection;
 
-        public AddressController(ILogger<AddressController> logger, IConfiguration configuration)
+        public AddressController()
         {
-            _logger = logger;
-            _configuration = configuration;
             _connection = DBConnection.Instance.Connection;
         }
 
