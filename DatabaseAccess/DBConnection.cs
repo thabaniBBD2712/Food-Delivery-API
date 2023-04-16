@@ -2,7 +2,7 @@ using System.Data.SqlClient;
 
 namespace FoodDeliveryAPI.DatabaseAccess
 {
-    public class DatabaseAccess
+    public sealed class DBConnection
     {
         private readonly SqlConnection _connection;
         public SqlConnection Connection
@@ -10,18 +10,19 @@ namespace FoodDeliveryAPI.DatabaseAccess
             get { return _connection; }
         }
 
-        private static readonly Lazy<DatabaseAccess> lazy =
-                new Lazy<DatabaseAccess>(() => new DatabaseAccess());
-        public static DatabaseAccess Instance { get { return lazy.Value; } }
+        private static readonly Lazy<DBConnection> lazy =
+                new Lazy<DBConnection>(() => new DBConnection());
+        public static DBConnection Instance { get { return lazy.Value; } }
 
 
-        private DatabaseAccess()
+        private DBConnection()
         {
             var config = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", optional: false)
                 .Build();
             string connectionString = config.GetConnectionString("FoodDeliveryDB");
             _connection = new SqlConnection("string");
+            _connection.Open();
         }
     }
 }
