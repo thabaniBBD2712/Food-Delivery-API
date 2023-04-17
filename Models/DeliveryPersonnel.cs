@@ -5,6 +5,6 @@
     public int PersonnelId { get; set; }
     public string? PersonnelName { get; set; } 
     public string? PersonnelContactNumber { get; set; }
-    public int? VehicleRegistrationNumber { get; set; }
+    public string? VehicleRegistrationNumber { get; set; }
   }
 }

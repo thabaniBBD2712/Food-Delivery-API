@@ -29,7 +29,7 @@ namespace FoodDeliveryAPI.Controllers
         connection.Open();
         string sqlStatement = "SELECT * FROM DeliveryPersoneel";
 
-        using (SqlCommand command = new SqlCommand(sqlStatement))
+        using (SqlCommand command = new SqlCommand(sqlStatement, connection))
         {
           using (SqlDataReader reader = command.ExecuteReader())
           {
@@ -39,7 +39,7 @@ namespace FoodDeliveryAPI.Controllers
               personnel.PersonnelId = reader.GetInt32("personeelId");
               personnel.PersonnelName = reader.GetString("personeelName");
               personnel.PersonnelContactNumber = reader.GetString("personeelContactNumber");
-              personnel.VehicleRegistrationNumber = reader.GetInt32("vehicleRegistrationNumber");
+              personnel.VehicleRegistrationNumber = reader.GetString("vehicleRegistrationNumber");
 
               personnelList.Add(personnel);
             }
@@ -59,7 +59,7 @@ namespace FoodDeliveryAPI.Controllers
         connection.Open();
         string sqlStatement = "SELECT * FROM DeliveryPersoneel WHERE personeelId = @personeelId";
 
-        using (SqlCommand command = new SqlCommand(sqlStatement))
+        using (SqlCommand command = new SqlCommand(sqlStatement, connection))
         {
           command.Parameters.AddWithValue("personeelId", id);
           using (SqlDataReader reader = command.ExecuteReader())
@@ -70,7 +70,7 @@ namespace FoodDeliveryAPI.Controllers
               personnel.PersonnelId = reader.GetInt32("personeelId");
               personnel.PersonnelName = reader.GetString("personeelName");
               personnel.PersonnelContactNumber = reader.GetString("personeelContactNumber");
-              personnel.VehicleRegistrationNumber = reader.GetInt32("vehicleRegistrationNumber");
+              personnel.VehicleRegistrationNumber = reader.GetString("vehicleRegistrationNumber");
 
               return Ok(personnel);
             }
@@ -99,7 +99,7 @@ namespace FoodDeliveryAPI.Controllers
         string sqlStatement = @"INSERT INTO DeliveryPersoneel(personeelName, personeelContactNumber, vehicleRegistrationNumber) 
                                 VALUES (@personnelName, @personnelContactNumber, @registrationNumber)";
 
-        using (SqlCommand command = new SqlCommand(sqlStatement))
+        using (SqlCommand command = new SqlCommand(sqlStatement, connection))
         {
           command.Parameters.AddWithValue("@personnelName", personnel.PersonnelName);
           command.Parameters.AddWithValue("@personnelContactNumber", personnel.PersonnelContactNumber);
@@ -129,7 +129,7 @@ namespace FoodDeliveryAPI.Controllers
                                   vehicleRegistrationNumber = @registrationNumber
                                 WHERE personeelId = @id";
 
-        using (SqlCommand command = new SqlCommand(sqlStatement))
+        using (SqlCommand command = new SqlCommand(sqlStatement, connection))
         {
           command.Parameters.AddWithValue("@personnelName", personnel.PersonnelName);
           command.Parameters.AddWithValue("@personnelContactNumber", personnel.PersonnelContactNumber);
@@ -152,7 +152,7 @@ namespace FoodDeliveryAPI.Controllers
         string sqlStatement = @"DELETE  FROM DeliveryPersoneel
                                  WHERE personeelId = @id";
 
-        using (SqlCommand command = new SqlCommand(sqlStatement))
+        using (SqlCommand command = new SqlCommand(sqlStatement, connection))
         {
           command.Parameters.AddWithValue("@id", id);
           command.ExecuteNonQuery();
