@@ -13,10 +13,14 @@ namespace FoodDeliveryAPI.Controllers
         private readonly IConfiguration _configuration;
         private readonly ILogger<OrderItemController> _logger;
 
+        private BasketController basket;
+
         public OrderItemController(ILogger<OrderItemController> logger, IConfiguration configuration)
         {
             _logger = logger;
             _configuration = configuration;
+            basket = new BasketController(configuration);
+            basket.OnCheckout += (sender, e) => this.checkout(e);
         }
 
         [HttpGet]
@@ -155,6 +159,13 @@ namespace FoodDeliveryAPI.Controllers
                         return Ok("OrderItem Deleted Successfully");
                     }
                 }
+            }
+        }
+
+        void checkout(List<OrderItem> orderItems){
+            foreach (OrderItem orderItem in orderItems)
+            {
+                Post(orderItem);
             }
         }
     }
