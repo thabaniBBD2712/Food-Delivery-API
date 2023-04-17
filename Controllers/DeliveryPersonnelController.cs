@@ -1,7 +1,7 @@
 ﻿using FoodDeliveryAPI.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.SqlClient;
+using System.Data.SqlClient;
 using System.Data;
 
 namespace FoodDeliveryAPI.Controllers
