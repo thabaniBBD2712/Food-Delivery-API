@@ -3,6 +3,7 @@ using System.Data;
 using System.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using FoodDeliveryAPI.Models;
+using FoodDeliveryAPI.DatabaseAccess;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -12,13 +13,11 @@ namespace FoodDeliveryAPI.Controllers
     [ApiController]
     public class RestaurantController : ControllerBase
     {
-        private readonly IConfiguration _configuration;
-        private readonly ILogger<RestaurantController> _logger;
+        private readonly SqlConnection _connection;
 
-        public RestaurantController(ILogger<RestaurantController> logger, IConfiguration configuration)
+        public RestaurantController()
         {
-            _logger = logger;
-            _configuration = configuration;
+            _connection = DBConnection.Instance.Connection;
         }
 
         // GET: method to retrieve all the restaurants from the db
@@ -26,34 +25,25 @@ namespace FoodDeliveryAPI.Controllers
         public IActionResult Get()
         {
             List<Restaurant> lstRestaurants = new List<Restaurant>();
-            // Retrieve the connection string from IConfiguration
-            string connectionString = _configuration.GetConnectionString("FoodDB");
 
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (SqlDataReader reader = new SqlCommand("SELECT * FROM Restaurant", _connection)
+             .ExecuteReader())
             {
-                connection.Open();
-                using (SqlCommand command = new SqlCommand("SELECT * FROM Restaurant", connection))
+                while (reader.Read())
                 {
-                    using (SqlDataReader reader = command.ExecuteReader())
+                    // Create a new Restaurant object and populate its properties
+                    Restaurant res = new Restaurant
                     {
-                        while (reader.Read())
-                        {
-                            // Create a new Restaurant object and populate its properties
-                            Restaurant res = new Restaurant
-                            {
-                                restaurantId = reader.GetInt32("restaurantId"),
-                                restaurantUserName = reader.GetString("restaurantUserName"),
-                                restaurantName = reader.GetString("restaurantName"),
-                                restaurantAddress = reader.GetInt32("restaurantAddress"),
-                                restaurantDescription = reader.GetString("restaurantDescription"),
-                                restaurantContactNumber = reader.GetString("restaurantContactNumber")
-                            };
+                        restaurantId = reader.GetInt32("restaurantId"),
+                        restaurantUserName = reader.GetString("restaurantUserName"),
+                        restaurantName = reader.GetString("restaurantName"),
+                        restaurantAddress = reader.GetInt32("restaurantAddress"),
+                        restaurantDescription = reader.GetString("restaurantDescription"),
+                        restaurantContactNumber = reader.GetString("restaurantContactNumber")
+                    };
 
-                            lstRestaurants.Add(res);
-                        }
-                    }
+                    lstRestaurants.Add(res);
                 }
-                connection.Close();
             }
             return Ok(lstRestaurants);
         }
@@ -62,35 +52,28 @@ namespace FoodDeliveryAPI.Controllers
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
-            // Retrieve the connection string from IConfiguration
-            string connectionString = _configuration.GetConnectionString("FoodDB");
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (SqlCommand command = new SqlCommand("SELECT * FROM Restaurant WHERE restaurantId = @restaurantId", _connection))
             {
-                connection.Open();
-                using (SqlCommand command = new SqlCommand("SELECT * FROM Restaurant WHERE restaurantId = @restaurantId", connection))
+                command.Parameters.AddWithValue("@restaurantId", id);
+                using (SqlDataReader reader = command.ExecuteReader())
                 {
-                    command.Parameters.AddWithValue("@restaurantId", id);
-                    using (SqlDataReader reader = command.ExecuteReader())
+                    if (reader.Read())
                     {
-                        if (reader.Read())
+                        Restaurant res = new Restaurant
                         {
-                            Restaurant res = new Restaurant
-                            {
-                                restaurantId = reader.GetInt32("restaurantId"),
-                                restaurantUserName = reader.GetString("restaurantUserName"),
-                                restaurantName = reader.GetString("restaurantName"),
-                                restaurantAddress = reader.GetInt32("restaurantAddress"),
-                                restaurantDescription = reader.GetString("restaurantDescription"),
-                                restaurantContactNumber = reader.GetString("restaurantContactNumber")
-                            };
-                            connection.Close();
+                            restaurantId = reader.GetInt32("restaurantId"),
+                            restaurantUserName = reader.GetString("restaurantUserName"),
+                            restaurantName = reader.GetString("restaurantName"),
+                            restaurantAddress = reader.GetInt32("restaurantAddress"),
+                            restaurantDescription = reader.GetString("restaurantDescription"),
+                            restaurantContactNumber = reader.GetString("restaurantContactNumber")
+                        };
 
-                            return Ok(res);
-                        }
-                        else
-                        {
-                            return NotFound();
-                        }
+                        return Ok(res);
+                    }
+                    else
+                    {
+                        return NotFound($"Restaurant with id {id} was not found");
                     }
                 }
             }
@@ -104,21 +87,15 @@ namespace FoodDeliveryAPI.Controllers
             {
                 return BadRequest();
             }
-            string connectionString = _configuration.GetConnectionString("FoodDB");
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (SqlCommand command = new SqlCommand("INSERT INTO Restaurant (restaurantUserName, restaurantName, restaurantAddress, restaurantDescription, restaurantContactNumber)" +
+                " VALUES (@restaurantUserName, @restaurantName, @restaurantAddress, @restaurantDescription, @restaurantContactNumber)", _connection))
             {
-                connection.Open();
-                using (SqlCommand command = new SqlCommand("INSERT INTO Restaurant (restaurantUserName, restaurantName, restaurantAddress, restaurantDescription, restaurantContactNumber)" +
-                    " VALUES (@restaurantUserName, @restaurantName, @restaurantAddress, @restaurantDescription, @restaurantContactNumber)", connection))
-                {
-                    command.Parameters.AddWithValue("@restaurantUserName", restaurant.restaurantUserName);
-                    command.Parameters.AddWithValue("@restaurantName", restaurant.restaurantName);
-                    command.Parameters.AddWithValue("@restaurantAddress", restaurant.restaurantAddress);
-                    command.Parameters.AddWithValue("@restaurantDescription", restaurant.restaurantDescription);
-                    command.Parameters.AddWithValue("@restaurantContactNumber", restaurant.restaurantContactNumber);
-                    command.ExecuteNonQuery();
-                }
-                connection.Close();
+                command.Parameters.AddWithValue("@restaurantUserName", restaurant.restaurantUserName);
+                command.Parameters.AddWithValue("@restaurantName", restaurant.restaurantName);
+                command.Parameters.AddWithValue("@restaurantAddress", restaurant.restaurantAddress);
+                command.Parameters.AddWithValue("@restaurantDescription", restaurant.restaurantDescription);
+                command.Parameters.AddWithValue("@restaurantContactNumber", restaurant.restaurantContactNumber);
+                command.ExecuteNonQuery();
             }
             return Ok("Restaurant Added");
         }
@@ -131,23 +108,21 @@ namespace FoodDeliveryAPI.Controllers
             {
                 return BadRequest();
             }
-            string connectionString = _configuration.GetConnectionString("FoodDB");
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (SqlCommand command = new SqlCommand("UPDATE Restaurant SET restaurantUserName = @restaurantUserName," +
+                " restaurantName = @restaurantName, restaurantAddress = @restaurantAddress, restaurantDescription= @restaurantDescription, " +
+                "restaurantContactNumber = @restaurantContactNumber WHERE restaurantId = @restaurantId", _connection))
             {
-                connection.Open();
-                using (SqlCommand command = new SqlCommand("UPDATE Restaurant SET restaurantUserName = @restaurantUserName," +
-                    " restaurantName = @restaurantName, restaurantAddress = @restaurantAddress, restaurantDescription= @restaurantDescription, " +
-                    "restaurantContactNumber = @restaurantContactNumber WHERE restaurantId = @restaurantId", connection))
+                command.Parameters.AddWithValue("@restaurantUserName", restaurant.restaurantUserName);
+                command.Parameters.AddWithValue("@restaurantName", restaurant.restaurantName);
+                command.Parameters.AddWithValue("@restaurantAddress", restaurant.restaurantAddress);
+                command.Parameters.AddWithValue("@restaurantDescription", restaurant.restaurantDescription);
+                command.Parameters.AddWithValue("@restaurantContactNumber", restaurant.restaurantContactNumber);
+                command.Parameters.AddWithValue("@restaurantId", id);
+                if (command.ExecuteNonQuery() == 0)
                 {
-                    command.Parameters.AddWithValue("@restaurantUserName", restaurant.restaurantUserName);
-                    command.Parameters.AddWithValue("@restaurantName", restaurant.restaurantName);
-                    command.Parameters.AddWithValue("@restaurantAddress", restaurant.restaurantAddress);
-                    command.Parameters.AddWithValue("@restaurantDescription", restaurant.restaurantDescription);
-                    command.Parameters.AddWithValue("@restaurantContactNumber", restaurant.restaurantContactNumber);
-                    command.Parameters.AddWithValue("@restaurantId", id);
-                    command.ExecuteNonQuery();
+                    return NotFound($"Restaurant with id {id} was not found");
                 }
-                connection.Close();
+                command.ExecuteNonQuery();
             }
             return Ok("Restaurant Updated Successfully");
         }
@@ -156,23 +131,17 @@ namespace FoodDeliveryAPI.Controllers
         [HttpDelete("{id}", Name = "DeleteRestaurant")]
         public IActionResult Delete(int id)
         {
-            string connectionString = _configuration.GetConnectionString("FoodDB");
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (SqlCommand command = new SqlCommand("DELETE FROM Restaurant WHERE restaurantId = @restaurantId", _connection))
             {
-                connection.Open();
-                using (SqlCommand command = new SqlCommand("DELETE FROM Restaurant WHERE restaurantId = @restaurantId", connection))
+                command.Parameters.AddWithValue("@restaurantId", id);
+                int rowsAffected = command.ExecuteNonQuery();
+                if (rowsAffected == 0)
                 {
-                    command.Parameters.AddWithValue("@restaurantId", id);
-                    int rowsAffected = command.ExecuteNonQuery();
-                    if (rowsAffected == 0)
-                    {
-                        return NotFound(); // Return a response indicating that the ID was not found
-                    }
-                    else
-                    {
-                        connection.Close();
-                        return Ok("Restaurant Deleted Successfully");
-                    }
+                    return NotFound(); // Return a response indicating that the ID was not found
+                }
+                else
+                {
+                    return Ok("Restaurant Deleted Successfully");
                 }
             }
         }
