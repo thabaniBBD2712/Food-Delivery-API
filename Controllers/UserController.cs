@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Data;
 using System.Data.SqlClient;
 using FoodDeliveryAPI.Models;
+using FoodDeliveryAPI.Services;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -14,6 +15,9 @@ namespace FoodDeliveryAPI.Controllers
         private readonly IConfiguration _configuration;
         private readonly ILogger<UserController> _logger;
 
+        public UserService userService = new UserService();
+        public OrderService orderService = new OrderService();
+
         public UserController(ILogger<UserController> logger, IConfiguration configuration)
         {
             _logger = logger;
@@ -24,6 +28,10 @@ namespace FoodDeliveryAPI.Controllers
         [HttpGet]
         public IActionResult Get()
         {
+            userService.invokeComplete();
+            orderService.invokeComplete();
+            userService.invokeIncomplete();
+            orderService.invokeIncomplete();
             List<User> lstUsers = new List<User>();
             // Retrieve the connection string from IConfiguration
             string connectionString = _configuration.GetConnectionString("FoodDB");
