@@ -28,7 +28,7 @@ namespace FoodDeliveryAPI.Controllers
             List<Restaurant> lstRestaurants = new List<Restaurant>();
             // Retrieve the connection string from IConfiguration
             string connectionString = _configuration.GetConnectionString("FoodDB");
-            
+
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 connection.Open();
@@ -53,6 +53,7 @@ namespace FoodDeliveryAPI.Controllers
                         }
                     }
                 }
+                connection.Close();
             }
             return Ok(lstRestaurants);
         }
@@ -82,6 +83,7 @@ namespace FoodDeliveryAPI.Controllers
                                 restaurantDescription = reader.GetString("restaurantDescription"),
                                 restaurantContactNumber = reader.GetString("restaurantContactNumber")
                             };
+                            connection.Close();
 
                             return Ok(res);
                         }
@@ -116,8 +118,9 @@ namespace FoodDeliveryAPI.Controllers
                     command.Parameters.AddWithValue("@restaurantContactNumber", restaurant.restaurantContactNumber);
                     command.ExecuteNonQuery();
                 }
+                connection.Close();
             }
-            return Ok();
+            return Ok("Restaurant Added");
         }
 
         // PUT api/<RestaurantController>/5
@@ -144,6 +147,7 @@ namespace FoodDeliveryAPI.Controllers
                     command.Parameters.AddWithValue("@restaurantId", id);
                     command.ExecuteNonQuery();
                 }
+                connection.Close();
             }
             return Ok("Restaurant Updated Successfully");
         }
@@ -166,6 +170,7 @@ namespace FoodDeliveryAPI.Controllers
                     }
                     else
                     {
+                        connection.Close();
                         return Ok("Restaurant Deleted Successfully");
                     }
                 }
