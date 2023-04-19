@@ -1,11 +1,9 @@
-﻿using Microsoft.SqlServer.Server;
-using System.Data;
+﻿using System.Data;
 using System.Data.SqlClient;
-using System.Diagnostics;
 
 namespace FoodDeliveryAPI.Models
 {
-    public class Item
+    public class ItemView
     {
 
         //Column Names
@@ -38,11 +36,11 @@ namespace FoodDeliveryAPI.Models
 
         // Restaurant Details
         public int RestaurantID { get; set; }
-        public Item() {
+        public ItemView() {
 
         }
 
-        public Item(ref SqlDataReader record)
+        public ItemView(ref SqlDataReader record)
         {
             try
             {
