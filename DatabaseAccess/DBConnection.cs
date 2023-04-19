@@ -14,8 +14,7 @@ namespace FoodDeliveryAPI.DatabaseAccess
         private static readonly Lazy<DBConnection> lazy =
                 new Lazy<DBConnection>(() => new DBConnection());
 
-        public static DBConnection Instance
-        { get { return lazy.Value; } }
+        public static DBConnection Instance { get { return lazy.Value; } }
 
         private DBConnection()
         {
