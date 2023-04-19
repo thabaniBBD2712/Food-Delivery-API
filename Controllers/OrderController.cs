@@ -46,8 +46,8 @@ namespace FoodDeliveryAPI.Controllers
                             order.addressId = (int)reader["addressId"];
                             order.orderStatusId = (int)reader["orderStatusId"];
 
-                            orders.Add(order);
-                        }
+                                orders.Add(order);
+                            }
                     }
                 }
             }
@@ -59,15 +59,18 @@ namespace FoodDeliveryAPI.Controllers
         public ActionResult<Order> Get(int orderId)
         {
             Order order = new Order();
+            order.orderItems = new List<OrderItem>();
+            int orderCount = 0;
+
             string connectionString = _configuration.GetConnectionString("FoodDeliveryDB");
 
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                SqlCommand command = new SqlCommand("SELECT * FROM [Order] WHERE orderId = @orderId", connection);
+                SqlCommand command = new SqlCommand("SELECT [Order].orderId, orderDate, restaurantId, userId, personeelId, addressId, orderStatusId, orderItemId, orderItemQuantity, orderItemPrice, itemInformationId FROM [Order] JOIN OrderItem ON [Order].orderId = OrderItem.orderId WHERE [Order].orderId = @orderId", connection);
                 command.Parameters.AddWithValue("@orderId", orderId);
                 connection.Open();
                 SqlDataReader reader = command.ExecuteReader();
-                if (reader.Read())
+                while (reader.Read())
                 {
                     order.orderId = (int)reader["orderId"];
                     order.orderDate = reader.GetDateTime("orderDate");
@@ -77,12 +80,19 @@ namespace FoodDeliveryAPI.Controllers
                     order.personeelId = (int)reader["personeelId"];
                     order.addressId = (int)reader["addressId"];
                     order.orderStatusId = (int)reader["orderStatusId"];
-                }
-                else
-                {
-                    return NotFound();
+                    order.orderItems.Add(new OrderItem{orderItemId = (int)reader["orderItemId"],
+                                                        orderItemQuantity = (int)reader["orderItemQuantity"],
+                                                        orderItemPrice = (decimal)reader["orderItemPrice"],
+                                                        orderId = (int)reader["orderId"],
+                                                        itemInformationId = (int)reader["itemInformationId"]
+                                        });
+                    orderCount ++;
                 }
                 reader.Close();
+                if (orderCount == 0)
+                {
+                    return NotFound();
+                } 
             }
             return order;
         }

@@ -10,6 +10,7 @@ namespace FoodDeliveryAPI.Models
     public int personeelId { get; set; }
     public int addressId { get; set; }
     public int orderStatusId { get; set; }
+    public List<OrderItem>? orderItems {get;set;}
 }
 
 
