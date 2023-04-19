@@ -399,3 +399,9 @@ FodyWeavers.xsd
 
 # VS Code
 .vscode/
+
+# VS Code local configuration files
+*.sln
+Properties/serviceDependencies.json
+Properties/serviceDependencies.local.json
+
