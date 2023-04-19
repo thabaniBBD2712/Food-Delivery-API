@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using FoodDeliveryAPI.Models;
+using System.Threading.Channels;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -10,19 +11,21 @@ namespace FoodDeliveryAPI.Controllers
     public class BasketController : ControllerBase
     {
         private readonly IConfiguration _configuration;
+        private readonly Channel<OrderItem> channel;
 
         private List<OrderItem> orderItems;
 
         public event EventHandler<List<OrderItem>
-        > OnCheckout  = delegate{};
+        > OnCheckout = delegate { };
 
-        public BasketController(IConfiguration configuration)
+        public BasketController(IConfiguration configuration, Channel<OrderItem> channel)
         {
+            this.channel = channel;
             _configuration = configuration;
             orderItems = new List<OrderItem>();
         }
 
-        [HttpPost("{itemId}")]
+        /*[HttpPost("{itemId}")]
         public IActionResult Post([FromBody] OrderItem orderItem)
         {
             if (orderItem == null)
@@ -31,8 +34,7 @@ namespace FoodDeliveryAPI.Controllers
             }
             this.orderItems.Add(orderItem);
             return Ok();
-        } 
-
+        }
 
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
@@ -46,7 +48,7 @@ namespace FoodDeliveryAPI.Controllers
             {
                 //reduce the quantity of the item if there is more than one in the basket
                 if (itemToDelete.orderItemQuantity > 1)
-                { 
+                {
                     itemToDelete.orderItemQuantity -= 1;
                     this.orderItems[id] = itemToDelete;
                 }
@@ -55,10 +57,10 @@ namespace FoodDeliveryAPI.Controllers
                     this.orderItems.RemoveAt(id);
                 }
                 return Ok("Item Removed Successfully");
-            }       
+            }
         }
 
-        [HttpPost( Name = "CheckoutBasket")] 
+        [HttpPost(Name = "CheckoutBasket")]
         public IActionResult CheckoutBasket()
         {
             if (this.orderItems.Count == 0)
@@ -66,16 +68,23 @@ namespace FoodDeliveryAPI.Controllers
                 return BadRequest();
             }
             this.checkoutBasket();
-            return Ok(); 
+            return Ok();
         }
 
         [HttpGet]
         public IActionResult Get()
         {
             return Ok(this.orderItems);
+        }*/
+
+        [HttpPost]
+        public async Task Post([FromBody] OrderItem value)
+        {
+            await channel.Writer.WriteAsync(value);
         }
 
-        void checkoutBasket(){
+        /*private void checkoutBasket()
+        {
             List<Exception> exceptions = new List<Exception>();
 
             foreach (Delegate handler in OnCheckout.GetInvocationList())
@@ -92,13 +101,12 @@ namespace FoodDeliveryAPI.Controllers
                 }
             }
 
-            if(exceptions.Any())
-                {
-                //Throw aggregate exception of all exceptions 
+            if (exceptions.Any())
+            {
+                //Throw aggregate exception of all exceptions
                 //occured while invoking subscribers event handlers
                 throw new AggregateException(exceptions);
             }
-        }
-       
+        }*/
     }
 }

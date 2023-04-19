@@ -3,6 +3,7 @@ using System.Data;
 using System.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using FoodDeliveryAPI.Models;
+using System.Threading.Channels;
 
 namespace FoodDeliveryAPI.Controllers
 {
@@ -12,14 +13,16 @@ namespace FoodDeliveryAPI.Controllers
     {
         private readonly IConfiguration _configuration;
         private readonly ILogger<OrderItemController> _logger;
+        private readonly Channel<OrderItem> channel;
 
         private BasketController basket;
 
-        public OrderItemController(ILogger<OrderItemController> logger, IConfiguration configuration)
+        public OrderItemController(ILogger<OrderItemController> logger, IConfiguration configuration, Channel<OrderItem> channel)
         {
             _logger = logger;
             _configuration = configuration;
-            basket = new BasketController(configuration);
+            this.channel = channel;
+            basket = new BasketController(configuration, channel);
             basket.OnCheckout += (sender, e) => this.checkout(e);
         }
 
@@ -28,7 +31,7 @@ namespace FoodDeliveryAPI.Controllers
         {
             List<OrderItem> lstOrderItems = new List<OrderItem>();
             string connectionString = _configuration.GetConnectionString("FoodDB");
-            
+
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 connection.Open();
@@ -44,9 +47,9 @@ namespace FoodDeliveryAPI.Controllers
                                 orderItemQuantity = reader.GetInt32("orderItemQuantity"),
                                 orderItemPrice = reader.GetDecimal("orderItemPrice"),
                                 orderId = reader.GetInt32("orderId"),
-                                itemInformationId = reader.GetInt32("itemInformationId")                            
+                                itemInformationId = reader.GetInt32("itemInformationId")
                             };
-                            
+
                             lstOrderItems.Add(orderItem);
                         }
                     }
@@ -75,7 +78,7 @@ namespace FoodDeliveryAPI.Controllers
                                 orderItemQuantity = reader.GetInt32("orderItemQuantity"),
                                 orderItemPrice = reader.GetDecimal("orderItemPrice"),
                                 orderId = reader.GetInt32("orderId"),
-                                itemInformationId = reader.GetInt32("itemInformationId")                            
+                                itemInformationId = reader.GetInt32("itemInformationId")
                             };
 
                             return Ok(orderItem);
@@ -162,7 +165,8 @@ namespace FoodDeliveryAPI.Controllers
             }
         }
 
-        void checkout(List<OrderItem> orderItems){
+        private void checkout(List<OrderItem> orderItems)
+        {
             foreach (OrderItem orderItem in orderItems)
             {
                 Post(orderItem);
