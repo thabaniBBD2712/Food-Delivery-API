@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Data.SqlTypes;
 using Microsoft.VisualBasic;
 using System.Reflection.Metadata.Ecma335;
+using System.ComponentModel;
 
 namespace FoodDeliveryAPI.Controllers
 {
@@ -50,14 +51,12 @@ namespace FoodDeliveryAPI.Controllers
                 "itemStatusId = @item_status_id " +
             "WHERE itemId = @item_id;";
 
-
-        private static readonly string GET_CATEGORY = "SELECT * FROM [ItemCategory] WHERE itemCategoryId = @categoryId";
-        private static readonly string GET_STATUS = "SELECT * FROM [ItemStatus] WHERE itemStatusId = @statusId";
-
-        private static readonly string GET_INFO = "SELECT * FROM [ItemInformation] WHERE ItemInformation = @infoId"; 
         private static readonly string GET_INFORMATION_ID = "SELECT TOP(1) * FROM [ItemInformation]" +
             " WHERE ItemName = @item_name AND ItemDescription = @item_description" +
             " ORDER BY [ItemInformationId] DESC";
+
+        private static readonly string DELETE_ITEM =
+            "DELETE FROM Item WHERE itemId = @item_id";
 
 
         [HttpGet]
@@ -92,152 +91,158 @@ namespace FoodDeliveryAPI.Controllers
         }
 
         [HttpGet("{id}")]
-        public Item GetItem(int id)
+        public IActionResult GetItem(int id)
         {
             using (SqlCommand command = new(GET_SINGLE_ITEM, _connection))
             {
                 command.Parameters.Add("item_id", SqlDbType.Int).Value = id;
                 SqlDataReader reader = command.ExecuteReader();
                 while (reader.Read()){
-                    return new Item(ref reader);
+                    return Ok (new Item(ref reader));
                 }
             }
 
-            return null;
+            return BadRequest("No Item Found");
         }
 
-        private string PersistInformation([FromBody] ref Item item)
+
+        private IActionResult PostInfo( ref Item item)
+        {
+
+            using (SqlCommand command = new(INSERT_ITEM_INFORMATION, _connection))
+            {
+                command.Parameters.AddWithValue("item_category_id", item.CategoryID);
+                command.Parameters.AddWithValue("item_description", item.Description);
+                command.Parameters.AddWithValue("item_name", item.Name);
+
+                Console.WriteLine(command.Parameters.ToString());
+
+                try
+                {
+                    command.ExecuteNonQuery();
+                }
+                catch
+                {
+                    return BadRequest("FAIL");
+                }
+            }
+
+            Console.WriteLine("db updated");
+
+            using (SqlCommand command = new(GET_INFORMATION_ID, _connection))
+            {
+                command.Parameters.AddWithValue("item_name", item.Name);
+                command.Parameters.AddWithValue("item_description", item.Description);
+                SqlDataReader reader = command.ExecuteReader();
+
+                if (reader.Read())
+                {
+                    item.InformationID = reader.GetInt32(Item.INFORMATION_ID);
+                    return Ok(item);
+                }
+                else
+                {
+                    return BadRequest("FAIL GET INFORMATION ID");
+                }
+            }
+        }
+
+
+
+        private IActionResult PutInfo( ref Item item)
         {
             // insert new info
+            Console.WriteLine("Updating information");
 
-            if (item.InformationID == 0) // perform insert
+            using (SqlCommand command = new(UPDATE_ITEM_INFORMATION, _connection))
             {
-                Console.WriteLine("Inserting information");
-                using (SqlCommand command = new(INSERT_ITEM_INFORMATION, _connection))
+                command.Parameters.AddWithValue("item_category_id", item.CategoryID);
+                command.Parameters.AddWithValue("item_description", item.Description);
+                command.Parameters.AddWithValue("item_name", item.Name);
+                command.Parameters.AddWithValue("item_information_id", item.InformationID);
+
+                try
                 {
-                    command.Parameters.AddWithValue("item_category_id", item.CategoryID);
-                    command.Parameters.AddWithValue("item_description", item.Description);
-                    command.Parameters.AddWithValue("item_name", item.Name);
-
-                    Console.WriteLine(command.ToString());
-
-                    try
-                    {
-                        command.ExecuteNonQuery();
-                        Console.WriteLine("Done");
-                    }
-                    catch
-                    {
-                        return "FAIL INSERT INFORMATION";
-                    }
+                    command.ExecuteNonQuery();
+                    return Ok(item);
                 }
-
-                // get ID of new info
-
-                using (SqlCommand command = new(GET_INFORMATION_ID, _connection))
+                catch (Exception e)
                 {
-                    command.Parameters.AddWithValue("item_name", item.Name);
-                    command.Parameters.AddWithValue("item_description", item.Name);
-                    SqlDataReader reader = command.ExecuteReader();
-
-                    if (reader.Read())
-                    {
-                        item.InformationID = reader.GetInt32(Item.INFORMATION_ID);
-                        Console.WriteLine(item.InformationID);
-                    }
-                    else
-                    {
-                        return "FAIL GET INFORMATION ID";
-                    }
-                }
-                
-            } 
-
-            else // perform update
-            {
-                Console.WriteLine("Updating information");
-
-                using (SqlCommand command = new(UPDATE_ITEM_INFORMATION, _connection))
-                {
-                    command.Parameters.AddWithValue("item_category_id", item.CategoryID);
-                    command.Parameters.AddWithValue("item_description", item.Description);
-                    command.Parameters.AddWithValue("item_name", item.Name);
-                    command.Parameters.AddWithValue("item_information_id", item.InformationID);
-
-                    Console.WriteLine("infoID" + item.InformationID);
-
-                    try
-                    {
-                        Console.WriteLine("start");
-                        command.ExecuteNonQuery();
-                        Console.WriteLine("done");
-                    }
-                    catch
-                    {
-                        return "FAIL UPDATE INFORMATION";
-                    }
+                    return BadRequest(e.Message);
                 }
             }
-            return "OK";
         }
 
-
-        [HttpPost("Persist/{Item}")]
-        public string PersistItem([FromBody]Item item)
+        [HttpPost("{Item}")]
+        public IActionResult PostItem([FromBody]Item item)
         {
 
-            PersistInformation(ref item);
+            ActionResult info_result =  (ActionResult)PostInfo(ref item);
+            Console.WriteLine(info_result.ToString());
 
-            if (item.ID == 0)
+
+            using (SqlCommand command = new(INSERT_ITEM, _connection))
             {
-                // perform insert
-                
-
-                // insert new item
-                using (SqlCommand command = new(INSERT_ITEM, _connection))
+                command.Parameters.AddWithValue("item_price", item.Price);
+                command.Parameters.AddWithValue("item_information_id", item.InformationID);
+                command.Parameters.AddWithValue("item_status_id", item.StatusID);
+                command.Parameters.AddWithValue("restaurant_id", item.RestaurantID);
+                try
                 {
-                    command.Parameters.AddWithValue("item_price", item.Price);
-                    command.Parameters.AddWithValue("item_information_id", item.InformationID);
-                    command.Parameters.AddWithValue("item_status_id", item.StatusID);
-                    command.Parameters.AddWithValue("restaurant_id", item.RestaurantID);
-                    try
-                    {
-                        int rows_affected = command.ExecuteNonQuery();
-                        Console.WriteLine(rows_affected);
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine(e.Message);
-                        return "FAIL 2";
-                    }
+                    int rows_affected = command.ExecuteNonQuery();
+                    return Ok(rows_affected);
+                }
+                catch (Exception e)
+                {
+                    return BadRequest(e.Message);
                 }
             }
-            else
+
+        }
+
+        [HttpPut("{Item}")]
+
+        public IActionResult PutItem([FromBody] Item item)
+        {
+            PutInfo(ref item);
+            // perform update
+            using (SqlCommand command = new(UPDATE_ITEM, _connection))
             {
-                // perform update
-                using (SqlCommand command = new(UPDATE_ITEM, _connection))
+                command.Parameters.AddWithValue("item_id", item.ID);
+                command.Parameters.AddWithValue("item_price", item.Price);
+                command.Parameters.AddWithValue("item_information_id", item.InformationID);
+                command.Parameters.AddWithValue("item_status_id", item.StatusID);
+
+                try
                 {
-                    command.Parameters.AddWithValue("item_id", item.ID);
-                    command.Parameters.AddWithValue("item_price", item.Price);
-                    command.Parameters.AddWithValue("item_information_id", item.InformationID);
-                    command.Parameters.AddWithValue("item_status_id", item.StatusID);
-
-                    try
-                    {
-                        int rows_affected = command.ExecuteNonQuery();
-                        Console.WriteLine(rows_affected);
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine(e.Message);
-                        return "FAIL 2";
-                    }
+                    int rows_affected = command.ExecuteNonQuery();
+                    return Ok(rows_affected);
                 }
-
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                    return BadRequest(e.Message);
+                }
             }
+        }
 
-
-            return "OK";
+        [HttpDelete("{id}")]
+        public IActionResult DeleteItem (int id)
+        {
+            using (SqlCommand command = new(DELETE_ITEM, _connection))
+            {
+                command.Parameters.AddWithValue("item_id", id);
+                try
+                {
+                    int rows_affected = command.ExecuteNonQuery();
+                    return(Ok(rows_affected));
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                    return Ok(e.Message);
+                }
+            }
         }
 
         public ItemController(IConfiguration _configuration)
