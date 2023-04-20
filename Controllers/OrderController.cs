@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Data;
 using System.Data.SqlClient;
 using FoodDeliveryAPI.Models;
+using FoodDeliveryAPI.DatabaseAccess;
 
 namespace FoodDeliveryAPI.Controllers
 {
@@ -9,14 +10,13 @@ namespace FoodDeliveryAPI.Controllers
     [ApiController]
     public class OrderController : ControllerBase
     {
-        private readonly IConfiguration _configuration;
-        private readonly ILogger<OrderController> _logger;
+        private readonly SqlConnection _connection;
 
-        public OrderController(ILogger<OrderController> logger, IConfiguration configuration)
+        public OrderController()
         {
-            _logger = logger;
-            _configuration = configuration;
+            _connection = DBConnection.Instance.Connection;
         }
+
 
         // get all orders 
         [HttpGet]
@@ -24,13 +24,8 @@ namespace FoodDeliveryAPI.Controllers
         {
 
             List<Order> orders = new List<Order>();
-            string connectionString = _configuration.GetConnectionString("FoodDeliveryDB");
-
-            using (SqlConnection connection = new SqlConnection(connectionString))
-
-            {
-                connection.Open();
-                using (SqlCommand command = new SqlCommand("SELECT * FROM [Order]", connection))
+           
+                using (SqlCommand command = new SqlCommand("SELECT * FROM [Order]", _connection))
                 {
                     using (SqlDataReader reader = command.ExecuteReader())
                     {
@@ -50,7 +45,7 @@ namespace FoodDeliveryAPI.Controllers
                         }
                     }
                 }
-            }
+           // }
 
             return Ok(orders);
         }
@@ -59,13 +54,9 @@ namespace FoodDeliveryAPI.Controllers
         public ActionResult<Order> Get(int orderId)
         {
             Order order = new Order();
-            string connectionString = _configuration.GetConnectionString("FoodDeliveryDB");
-
-            using (SqlConnection connection = new SqlConnection(connectionString))
-            {
-                SqlCommand command = new SqlCommand("SELECT * FROM [Order] WHERE orderId = @orderId", connection);
+                SqlCommand command = new SqlCommand("SELECT * FROM [Order] WHERE orderId = @orderId", _connection);
                 command.Parameters.AddWithValue("@orderId", orderId);
-                connection.Open();
+                
                 SqlDataReader reader = command.ExecuteReader();
                 if (reader.Read())
                 {
@@ -83,7 +74,6 @@ namespace FoodDeliveryAPI.Controllers
                     return NotFound();
                 }
                 reader.Close();
-            }
             return order;
         }
 
@@ -96,13 +86,9 @@ namespace FoodDeliveryAPI.Controllers
             {
                 return BadRequest();
             }
-            string connectionString = _configuration.GetConnectionString("FoodDeliveryDB");
-            using (SqlConnection connection = new SqlConnection(connectionString))
-            {
                 DateTime currentDateTime = DateTime.Now;
-                connection.Open();
                 using (SqlCommand command = new SqlCommand("INSERT INTO [Order] (orderDate, restaurantId, userId, personeelId, addressId, orderStatusId)" +
-                "VALUES (@orderDate, @restaurantId, @userId, @personeelId, @addressId, @orderStatusId)", connection))
+                "VALUES (@orderDate, @restaurantId, @userId, @personeelId, @addressId, @orderStatusId)", _connection))
                 {
                     command.Parameters.AddWithValue("@orderDate", currentDateTime);
                     command.Parameters.AddWithValue("@restaurantId", order.restaurantId);
@@ -112,7 +98,7 @@ namespace FoodDeliveryAPI.Controllers
                     command.Parameters.AddWithValue("@orderStatusId", order.orderStatusId);
                     command.ExecuteNonQuery();
                 }
-            }
+           
             return Ok();
         }
 
@@ -124,10 +110,7 @@ namespace FoodDeliveryAPI.Controllers
                 return BadRequest();
             }
             DateTime currentDateTime = DateTime.Now;
-            string connectionString = _configuration.GetConnectionString("FoodDeliveryDB");
-            using (SqlConnection connection = new SqlConnection(connectionString))
-            {
-                connection.Open();
+    
                 string query = @"UPDATE [Order]
                        SET restaurantId = @restaurantId,
                            orderDate = @orderDate,
@@ -137,7 +120,7 @@ namespace FoodDeliveryAPI.Controllers
                            orderStatusId = @orderStatusId
                        WHERE orderId = @orderId";
 
-                using (SqlCommand command = new SqlCommand(query, connection))
+                using (SqlCommand command = new SqlCommand(query, _connection))
                 {
                     command.Parameters.AddWithValue("@orderId", id);
                     command.Parameters.AddWithValue("@orderDate", currentDateTime);
@@ -149,7 +132,7 @@ namespace FoodDeliveryAPI.Controllers
                     command.ExecuteNonQuery();
 
                 }
-            }
+            
             return Ok("Order Updated Successfully");
         }
     }
