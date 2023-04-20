@@ -19,10 +19,6 @@ namespace FoodDeliveryAPI.Models
     public string ?personeelName { get; set; }
     public string ?personeelContactNumber { get; set; }
     public string ?vehicleRegistrationNumber { get; set; }
-    public string ?streetName { get; set; }
-    public string ?city { get; set; }
-    public string ?province { get; set; }
-    public string ?postalCode { get; set; }
     public string ?orderStatusName { get; set; }
 }
 
