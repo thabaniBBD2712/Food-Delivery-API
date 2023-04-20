@@ -17,10 +17,8 @@ namespace FoodDeliveryAPI.Controllers
         private OrderServices _orderService;
         private readonly SqlConnection _connection;
 
-        public OrderController()
+        public OrderController(IConfiguration configuration, ILogger<Order> logger)
         {
-            _logger = logger;
-            _configuration = configuration;
             _orderService = new OrderServices();
             _auditService = new AuditService();
             _auditService.Subscribe(_orderService);
@@ -36,10 +34,10 @@ namespace FoodDeliveryAPI.Controllers
         {
 
             List<Order> orders = new List<Order>();
-            string query=@"SELECT o.orderId, o.orderDate, r.restaurantName,r.restaurantAddress,r.restaurantDescription,r.restaurantContactNumber, 
+            string query= @"SELECT o.orderId, o.orderDate, r.restaurantName,r.restaurantAddress,r.restaurantDescription,r.restaurantContactNumber, 
                 u.username,u.userContactNumber, 
                 p.personeelName,p.personeelContactNumber,p.vehicleRegistrationNumber,
-                a.streetName,a.city,a.province,a.postalCode,
+                CONCAT(a.streetName, ', ',a.city, ', ',a.province,', ',a.postalCode) AS [Address],
                 os.orderStatusName
                 FROM [Order] o
                 JOIN Restaurant r ON o.restaurantId = r.restaurantId
@@ -113,10 +111,10 @@ namespace FoodDeliveryAPI.Controllers
             return order;
         }
 
-        [HttpGet("totalOrder/{orderId}")]
-        public IActionResult GetTotal(int orderId) 
+        [HttpGet("orderSummary/{orderId}")]
+        public IActionResult GetOrderSummary(int orderId) 
         {
-          decimal total = _orderService.GetTotal(orderId);
+          OrderSummary total = _orderService.GetOrderSummary(orderId);
           return Ok(total);
         }
 

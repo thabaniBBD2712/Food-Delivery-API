@@ -4,10 +4,10 @@ namespace FoodDeliveryAPI.Events
 {
   public class OrderEventArgs: EventArgs
   {
-    public decimal TotalValue { get; set; }
-    public OrderEventArgs(decimal totalValue) 
+    public OrderSummary OrderSumm { get; set; }
+    public OrderEventArgs(OrderSummary orderSumm) 
     {
-      TotalValue = totalValue;
+      OrderSumm = orderSumm;
     }
 
   }

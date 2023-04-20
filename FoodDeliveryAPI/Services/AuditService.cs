@@ -11,7 +11,7 @@ namespace FoodDeliveryAPI.Services
 
     private void WriteAuditLog(object sender, OrderEventArgs e)
     {
-      Console.WriteLine($"Order total {e.TotalValue}");
+      Console.WriteLine($"Order total {e.OrderSumm}");
     }
   }
 }
