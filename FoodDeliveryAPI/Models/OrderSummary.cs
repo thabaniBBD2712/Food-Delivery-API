@@ -2,6 +2,7 @@
 {
   public class OrderSummary
   {
+    public int Id { get; set; }
     public string Username { get; set; }
     public string ContactNumber { get; set; }
 

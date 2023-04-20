@@ -4,6 +4,7 @@ using System.Data.SqlClient;
 using FoodDeliveryAPI.Models;
 using FoodDeliveryAPI.Services;
 using FoodDeliveryAPI.DatabaseAccess;
+using FoodDeliveryAPI.Events;
 
 namespace FoodDeliveryAPI.Controllers
 {
@@ -34,11 +35,11 @@ namespace FoodDeliveryAPI.Controllers
         {
 
             List<Order> orders = new List<Order>();
-            string query= @"SELECT o.orderId, o.orderDate, r.restaurantName,r.restaurantAddress,r.restaurantDescription,r.restaurantContactNumber, 
-                u.username,u.userContactNumber, 
-                p.personeelName,p.personeelContactNumber,p.vehicleRegistrationNumber,
-                CONCAT(a.streetName, ', ',a.city, ', ',a.province,', ',a.postalCode) AS [Address],
-                os.orderStatusName
+            string query= @"SELECT o.orderId, o.orderDate, r.restaurantId, r.restaurantName,r.restaurantAddress,r.restaurantDescription,r.restaurantContactNumber, 
+                u.userId, u.username,u.userContactNumber, 
+                p.personeelId, p.personeelName,p.personeelContactNumber,p.vehicleRegistrationNumber,
+                a.addressId, CONCAT(a.streetName, ', ',a.city, ', ',a.province,', ',a.postalCode) AS [Address],
+                os.orderStatusId, os.orderStatusName
                 FROM [Order] o
                 JOIN Restaurant r ON o.restaurantId = r.restaurantId
                 JOIN [AppUser] u ON o.userId = u.userId
@@ -70,10 +71,7 @@ namespace FoodDeliveryAPI.Controllers
                             order.personeelName = reader.GetString("personeelName");
                             order.personeelContactNumber = reader.GetString("personeelContactNumber");
                             order.vehicleRegistrationNumber = reader.GetString("vehicleRegistrationNumber");
-                            order.streetName = reader.GetString("vehicleRegistrationNumber");
-                            order.city = reader.GetString("city");
-                            order.province = reader.GetString("province");
-                            order.postalCode = reader.GetString("postalCode");
+                            order.restaurantAddress = reader.GetString("Address");
                             order.orderStatusName = reader.GetString("orderStatusName");
                             
 
@@ -175,5 +173,10 @@ namespace FoodDeliveryAPI.Controllers
             
             return Ok("Order Updated Successfully");
         }
-    }
+
+        private OrderSummary WriteAuditLog(object sender, OrderEventArgs e)
+        {
+          return e.OrderSumm;
+        }
+  }
 }
