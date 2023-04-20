@@ -63,5 +63,19 @@ namespace FoodDeliveryAPI.Controllers
                 }
             }
         }
+
+        public static int GetIdByName(string name)
+        {
+            using (SqlCommand command = new SqlCommand(
+                @"SELECT TOP (1) [itemCategoryId]
+                FROM [FoodDeliveryDB].[dbo].[ItemCategory] category
+                WHERE category.itemCategoryName = @name", DBConnection.Instance.Connection
+            ))
+            {
+                command.Parameters.AddWithValue("@name", name);
+                object result = command.ExecuteScalar();
+                return result == null ? 0 : (Int32)result;
+            }
+        }
     }
 }
