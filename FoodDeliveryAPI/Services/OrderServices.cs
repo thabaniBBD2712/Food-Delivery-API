@@ -60,7 +60,7 @@ namespace FoodDeliveryAPI.Services
                 WHERE orderId = @order_id";
             using (SqlCommand command = new SqlCommand(sqlStatement, _connection))
             {
-                command.Parameters.AddWithValue("orderId", id);
+                command.Parameters.AddWithValue("order_id", id);
                 SqlDataReader reader = command.ExecuteReader();
                 
                 while (reader.Read())
@@ -87,7 +87,7 @@ namespace FoodDeliveryAPI.Services
                 os.orderStatusName
                 FROM [Order] o
                 JOIN Restaurant r ON o.restaurantId = r.restaurantId
-                JOIN [User] u ON o.userId = u.userId
+                JOIN [AppUser] u ON o.userId = u.userId
                 JOIN DeliveryPersoneel p ON o.personeelId = p.personeelId
                 JOIN Address a ON o.addressId = a.addressId
                 JOIN OrderStatus os ON o.orderStatusId = os.orderStatusId WHERE o.OrderId=@id;";

@@ -85,37 +85,9 @@ namespace FoodDeliveryAPI.Controllers
         [HttpGet("{orderId}")]
         public ActionResult<Order> Get(int orderId)
         {
-            Order order = new Order();
-                SqlCommand command = new SqlCommand("SELECT * FROM [Order] WHERE orderId = @orderId", _connection);
-                command.Parameters.AddWithValue("@orderId", orderId);
-                
-                SqlDataReader reader = command.ExecuteReader();
-                if (reader.Read())
-                {
-                    order.orderId = (int)reader["orderId"];
-                    order.orderDate = reader.GetDateTime("orderDate");
-
-                    order.restaurantId = (int)reader["restaurantId"];
-                    order.userId = (int)reader["userId"];
-                    order.personeelId = (int)reader["personeelId"];
-                    order.addressId = (int)reader["addressId"];
-                    order.orderStatusId = (int)reader["orderStatusId"];
-                }
-                else
-                {
-                    return NotFound();
-                }
-                reader.Close();
-            return order;
-        }
-
-        [HttpGet("orderSummary/{orderId}")]
-        public IActionResult GetOrderSummary(int orderId) 
-        {
           OrderSummary total = _orderService.GetOrderSummary(orderId);
           return Ok(total);
         }
-
         // POST api/<RestaurantController>
         [HttpPost]
         public IActionResult Post([FromBody] Order order)
