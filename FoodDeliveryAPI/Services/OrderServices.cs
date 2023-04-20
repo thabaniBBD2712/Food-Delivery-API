@@ -31,9 +31,9 @@ namespace FoodDeliveryAPI.Services
     private decimal CalculateTotal(int id)
     {
       
-      string sqlStatement = @"SELECT SUM(oi.orderItemPrice * oi.orderItemQuantity)
+      string sqlStatement = @"SELECT COALESCE(SUM(oi.orderItemPrice * oi.orderItemQuantity), 0)
                               FROM [Order] o INNER JOIN OrderItem oi
-                              ON o.orderID=oi.orderID WHERE oi.orderID= @id";
+                              ON o.orderID=oi.orderID WHERE oi.orderID=@id";
       using (SqlCommand command = new SqlCommand(sqlStatement, _connection))
       {
         command.Parameters.AddWithValue("id", id);

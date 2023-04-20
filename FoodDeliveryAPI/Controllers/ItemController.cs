@@ -3,6 +3,7 @@ using System.Data;
 using System.Data.SqlClient;
 using FoodDeliveryAPI.Models;
 using FoodDeliveryAPI.DatabaseAccess;
+using FoodDeliveryAPI.Updaters;
 
 namespace FoodDeliveryAPI.Controllers
 {
@@ -11,10 +12,24 @@ namespace FoodDeliveryAPI.Controllers
     public class ItemController : ControllerBase
     {
         private readonly SqlConnection _connection;
+        private readonly EventHandler<Updater.UpdateItemStatusArgs> onUpdateItemStatus = (sender, eventArgs) =>
+        {
+            using (SqlCommand command = new SqlCommand(
+                @"UPDATE Item
+                SET itemStatusId = @itemStatusId
+                WHERE itemId = @itemId", DBConnection.Instance.Connection
+            ))
+            {
+                command.Parameters.AddWithValue("@itemStatusId", eventArgs.ItemStatusId);
+                command.Parameters.AddWithValue("@itemId", eventArgs.ParentId);
+                command.ExecuteNonQuery();
+            }
+        };
 
         public ItemController()
         {
             _connection = DBConnection.Instance.Connection;
+            Updater.UpdateItemStatusEvent += onUpdateItemStatus;
         }
 
         // GET: retrieve all items from db

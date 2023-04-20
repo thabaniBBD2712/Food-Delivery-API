@@ -5,6 +5,7 @@ using FoodDeliveryAPI.Models;
 using FoodDeliveryAPI.Services;
 using FoodDeliveryAPI.DatabaseAccess;
 using FoodDeliveryAPI.Events;
+using FoodDeliveryAPI.Updaters;
 
 namespace FoodDeliveryAPI.Controllers
 {
@@ -17,13 +18,28 @@ namespace FoodDeliveryAPI.Controllers
         private AuditService _auditService;
         private OrderServices _orderService;
         private readonly SqlConnection _connection;
+        private readonly EventHandler<Updater.UpdateOrderStatusArgs> onUpdateOrderStatus = (sender, eventArgs) =>
+        {
+            using (SqlCommand command = new SqlCommand(
+                @"UPDATE [Order]
+                SET orderStatusId = @orderStatusId
+                WHERE orderId = @orderId", DBConnection.Instance.Connection
+            ))
+            {
+                command.Parameters.AddWithValue("@orderStatusId", eventArgs.OrderStatusId);
+                command.Parameters.AddWithValue("@orderId", eventArgs.ParentId);
+                command.ExecuteNonQuery();
+            }
+        };
 
         public OrderController(IConfiguration configuration, ILogger<Order> logger)
         {
             _orderService = new OrderServices();
             _auditService = new AuditService();
             _auditService.Subscribe(_orderService);
-            _connection = DBConnection.Instance.Connection;
+            _connection = DBConnection.Instance.Connection;            
+            Updater.UpdateOrderStatusEvent += onUpdateOrderStatus;
+
         }
         //get order details
 
