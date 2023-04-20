@@ -21,6 +21,8 @@ namespace FoodDelivery
 
         public static List<OrderItem> orderItems { get; set; }
 
+        public static DeliveryPersonnel deliveryPersonnel { get; set; }
+
         public static async Task Main()
         {
             await login();
@@ -130,7 +132,7 @@ namespace FoodDelivery
             }
             else
             {
-                Console.WriteLine($"Failed to fetch MyModel. StatusCode: {response.StatusCode}");
+                Console.WriteLine($"Failed to fetch ItemInformation. StatusCode: {response.StatusCode}");
             }
         }
 
@@ -217,12 +219,13 @@ namespace FoodDelivery
                 {
                     var lastItem = orders[^1];
                     currentOrderId = lastItem.orderId;
+                    Console.WriteLine(currentOrderId);
                 }
 
             }
             else
             {
-                Console.WriteLine($"Failed to fetch MyModel. StatusCode: {response.StatusCode}");
+                Console.WriteLine($"Failed to fetch Order. StatusCode: {response.StatusCode}");
             }
         }
 
@@ -242,7 +245,7 @@ namespace FoodDelivery
             }
             else
             {
-                Console.WriteLine($"Failed to fetch MyModel. StatusCode: {response.StatusCode}");
+                Console.WriteLine($"Failed to fetch Item. StatusCode: {response.StatusCode}");
             }
         }
 
@@ -262,7 +265,7 @@ namespace FoodDelivery
             }
             else
             {
-                Console.WriteLine($"Failed to fetch MyModel. StatusCode: {response.StatusCode}");
+                Console.WriteLine($"Failed to fetch Restaurant. StatusCode: {response.StatusCode}");
             }
         }
 
@@ -303,6 +306,7 @@ namespace FoodDelivery
                     }
                 }
 
+                Console.WriteLine("------------------------------------------------------------");
                 Console.WriteLine("Total price: " + totalPrice);
                 Console.WriteLine("------------------------------------------------------------");
                 Console.WriteLine("Confirm order? (Y/N)");
@@ -310,7 +314,8 @@ namespace FoodDelivery
 
                 if(res == "Y")
                 {
-                  await confirmOrder();
+                    Console.WriteLine(order.personeelId);
+                  await confirmOrder(order.personeelId);
                 }
                 else
                 {
@@ -320,7 +325,7 @@ namespace FoodDelivery
             }
             else
             {
-                Console.WriteLine($"Failed to fetch MyModel. StatusCode: {response.StatusCode}");
+                Console.WriteLine($"Failed to fetch Order. StatusCode: {response.StatusCode}");
             }
         }
 
@@ -337,26 +342,39 @@ namespace FoodDelivery
             }
             else
             {
-                Console.WriteLine($"Failed to fetch MyModel. StatusCode: {response.StatusCode}");
+                Console.WriteLine($"Failed to fetch OrderItem. StatusCode: {response.StatusCode}");
             }
 
 
         }
 
-        public static async Task confirmOrder()
+        public static async Task confirmOrder(int deliveryId)
+        {
+            await getDeliveryPersonel(deliveryId);
+
+            Console.WriteLine("You order has been placed and will be delivered by: ");
+            Console.WriteLine("Name: " + deliveryPersonnel.PersonnelName);
+            Console.WriteLine("Contact: " + deliveryPersonnel.PersonnelContactNumber);
+
+
+        }
+
+        public static async Task getDeliveryPersonel(int deliveryId)
         {
             HttpClient httpClient = new HttpClient();
 
-            HttpResponseMessage response = await httpClient.GetAsync("http://localhost:5263/api/FoodDeliver.com/v1/OrderItem");
+            var request = "http://localhost:5263/api/FoodDeliver.com/v1/DeliveryPersonnel/" + deliveryId;
+
+            HttpResponseMessage response = await httpClient.GetAsync(request);
             if (response.IsSuccessStatusCode)
             {
-                List<OrderItem> oi = await response.Content.ReadAsAsync<List<OrderItem>>();
+                DeliveryPersonnel dp = await response.Content.ReadAsAsync<DeliveryPersonnel>();
 
-                orderItems = oi;
+                deliveryPersonnel = dp;
             }
             else
             {
-                Console.WriteLine($"Failed to fetch MyModel. StatusCode: {response.StatusCode}");
+                Console.WriteLine($"Failed to fetch DeliveryPersonnel. StatusCode: {response.StatusCode}");
             }
 
 
