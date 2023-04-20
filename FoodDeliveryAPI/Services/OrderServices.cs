@@ -112,7 +112,7 @@ namespace FoodDeliveryAPI.Services
             order.VehicleRegistrationNumber = reader.GetString("vehicleRegistrationNumber");
             order.RestaurantAddress = reader.GetString("Address");
             order.OrderStatusName = reader.GetString("orderStatusName");
-            order.OrderItemSummaries = new List<OrderItemSummary>();
+            order.OrderItemSummaries = GetOrderItemSummaries(order.Id);
             order.TotalValue = total;
             return order;
           }
