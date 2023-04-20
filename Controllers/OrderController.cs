@@ -16,7 +16,9 @@ namespace FoodDeliveryAPI.Controllers
         {
             _connection = DBConnection.Instance.Connection;
         }
+        //get order details
 
+        
 
         // get all orders 
         [HttpGet]
@@ -24,8 +26,19 @@ namespace FoodDeliveryAPI.Controllers
         {
 
             List<Order> orders = new List<Order>();
-           
-                using (SqlCommand command = new SqlCommand("SELECT * FROM [Order]", _connection))
+            string query=@"SELECT o.orderId, o.orderDate, r.restaurantName,r.restaurantAddress,r.restaurantDescription,r.restaurantContactNumber, 
+                u.username,u.userContactNumber, 
+                p.personeelName,p.personeelContactNumber,p.vehicleRegistrationNumber,
+                a.streetName,a.city,a.province,a.postalCode,
+                os.orderStatusName
+                FROM [Order] o
+                JOIN Restaurant r ON o.restaurantId = r.restaurantId
+                JOIN [AppUser] u ON o.userId = u.userId
+                JOIN DeliveryPersoneel p ON o.personeelId = p.personeelId
+                JOIN Address a ON o.addressId = a.addressId
+                JOIN OrderStatus os ON o.orderStatusId = os.orderStatusId";
+
+                using (SqlCommand command = new SqlCommand(query, _connection))
                 {
                     using (SqlDataReader reader = command.ExecuteReader())
                     {
@@ -40,13 +53,26 @@ namespace FoodDeliveryAPI.Controllers
                             order.personeelId = reader.GetInt32("personeelId");
                             order.addressId = (int)reader["addressId"];
                             order.orderStatusId = (int)reader["orderStatusId"];
+                            order.restaurantName = reader.GetString("restaurantName");
+                            order.restaurantName = reader.GetString("restaurantName");
+                            order.restaurantDescription = reader.GetString("restaurantDescription");
+                            order.restaurantContactNumber = reader.GetString("restaurantContactNumber");
+                            order.username = reader.GetString("username");
+                            order.userContactNumber = reader.GetString("userContactNumber");
+                            order.personeelName = reader.GetString("personeelName");
+                            order.personeelContactNumber = reader.GetString("personeelContactNumber");
+                            order.vehicleRegistrationNumber = reader.GetString("vehicleRegistrationNumber");
+                            order.streetName = reader.GetString("vehicleRegistrationNumber");
+                            order.city = reader.GetString("city");
+                            order.province = reader.GetString("province");
+                            order.postalCode = reader.GetString("postalCode");
+                            order.orderStatusName = reader.GetString("orderStatusName");
+                            
 
                             orders.Add(order);
                         }
                     }
                 }
-           // }
-
             return Ok(orders);
         }
         //get specific Order 
@@ -85,7 +111,7 @@ namespace FoodDeliveryAPI.Controllers
             if (order == null)
             {
                 return BadRequest();
-            }
+            }    
                 DateTime currentDateTime = DateTime.Now;
                 using (SqlCommand command = new SqlCommand("INSERT INTO [Order] (orderDate, restaurantId, userId, personeelId, addressId, orderStatusId)" +
                 "VALUES (@orderDate, @restaurantId, @userId, @personeelId, @addressId, @orderStatusId)", _connection))
