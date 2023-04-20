@@ -4,6 +4,7 @@ using System.Data.SqlClient;
 using FoodDeliveryAPI.Models;
 using FoodDeliveryAPI.Services;
 using FoodDeliveryAPI.DatabaseAccess;
+using FoodDeliveryAPI.Events;
 
 namespace FoodDeliveryAPI.Controllers
 {
@@ -175,5 +176,10 @@ namespace FoodDeliveryAPI.Controllers
             
             return Ok("Order Updated Successfully");
         }
-    }
+
+        private OrderSummary WriteAuditLog(object sender, OrderEventArgs e)
+        {
+          return e.OrderSumm;
+        }
+  }
 }

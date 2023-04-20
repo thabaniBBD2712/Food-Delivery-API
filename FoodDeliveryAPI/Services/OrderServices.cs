@@ -9,8 +9,8 @@ namespace FoodDeliveryAPI.Services
   public class OrderServices
   {
     private readonly SqlConnection _connection;
-    public delegate decimal OnOrderTotalCalculateHandler(object sender, OrderEventArgs orderEventArgs);
-    public event EventHandler<OrderEventArgs> OnOrderTotalCalculate;
+    public delegate void OnOrderTotalCalculateHandler(object sender, OrderEventArgs orderEventArgs);
+    public event OnOrderTotalCalculateHandler OnOrderTotalCalculate;
     public OrderServices() 
     {
       _connection = DBConnection.Instance.Connection;
@@ -20,9 +20,10 @@ namespace FoodDeliveryAPI.Services
     { 
       OrderSummary summary = OrderSummary(id);
       OrderEventArgs args = new OrderEventArgs(summary);
-      if (OnOrderTotalCalculate != null)
+      OnOrderTotalCalculateHandler e = OnOrderTotalCalculate;
+      if (e != null)
       {
-        OnOrderTotalCalculate(this, args);
+        e(this, args);
       }
       return summary;
     }
@@ -70,7 +71,7 @@ namespace FoodDeliveryAPI.Services
           {
             OrderSummary order = new OrderSummary();
 
-            
+            order.Id = reader.GetInt32("orderId");
             order.RestaurantName = reader.GetString("restaurantName");
             order.RestaurantName = reader.GetString("restaurantName");
             order.RestaurantDescription = reader.GetString("restaurantDescription");
@@ -91,6 +92,10 @@ namespace FoodDeliveryAPI.Services
       return null;
     }
 
+    private void AddOrder(OrderItem)
+    {
+
+    }
 
   }
 }
