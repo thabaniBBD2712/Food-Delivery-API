@@ -10,6 +10,20 @@ namespace FoodDeliveryAPI.Models
     public int personeelId { get; set; }
     public int addressId { get; set; }
     public int orderStatusId { get; set; }
+    public string ?restaurantName { get; set; }
+    public string ?restaurantAddress { get; set; }
+    public string ?restaurantDescription { get; set; }
+    public string ?restaurantContactNumber { get; set; }
+    public string ?username { get; set; }
+    public string ?userContactNumber { get; set; }
+    public string ?personeelName { get; set; }
+    public string ?personeelContactNumber { get; set; }
+    public string ?vehicleRegistrationNumber { get; set; }
+    public string ?streetName { get; set; }
+    public string ?city { get; set; }
+    public string ?province { get; set; }
+    public string ?postalCode { get; set; }
+    public string ?orderStatusName { get; set; }
 }
 
 
