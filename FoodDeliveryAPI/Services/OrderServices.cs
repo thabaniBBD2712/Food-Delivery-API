@@ -121,10 +121,5 @@ namespace FoodDeliveryAPI.Services
       return null;
     }
 
-    private void AddOrder(OrderItem)
-    {
-
-    }
-
   }
 }
