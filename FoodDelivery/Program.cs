@@ -8,29 +8,30 @@ using System.Threading.Tasks;
 
 namespace FoodDelivery
 {
-  public class Program
-  {
-    public static async Task Main()
+    public class Program
     {
-      HttpClient httpClient = new HttpClient();
-
-      HttpResponseMessage response = await httpClient.GetAsync("http://localhost:5263/api/FoodDeliver.com/v1/Restaurant");
-      if (response.IsSuccessStatusCode)
-      {
-        // Read the response content as MyModel
-        List<Restaurant> myModel = await response.Content.ReadAsAsync<List<Restaurant>>();
-        foreach(var m in myModel)
+        public static async Task Main()
         {
-          Console.WriteLine($"MyModel: Id={m.restaurantId}, Name={m.restaurantName}");
+            HttpClient httpClient = new HttpClient();
+
+            HttpResponseMessage response = await httpClient.GetAsync("http://localhost:5263/api/FoodDeliver.com/v1/Restaurant");
+            if (response.IsSuccessStatusCode)
+            {
+              Console.WriteLine("Which restaurant would you like to order from?");
+              List<Restaurant> myModel = await response.Content.ReadAsAsync<List<Restaurant>>();
+              foreach (var m in myModel)
+              {
+                  Console.WriteLine($"{m.restaurantId}: {m.restaurantName}");
+              }
+
+            }
+            else
+            {
+                Console.WriteLine($"Failed to fetch MyModel. StatusCode: {response.StatusCode}");
+            }
+
+            
         }
-        
-        Console.ReadLine();
-      }
-      else
-      {
-        Console.WriteLine($"Failed to fetch MyModel. StatusCode: {response.StatusCode}");
-      }
+
     }
-    
-  }
 }
