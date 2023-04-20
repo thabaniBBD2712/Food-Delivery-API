@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Data;
 using System.Data.SqlClient;
 using FoodDeliveryAPI.Models;
+using FoodDeliveryAPI.Services;
 
 namespace FoodDeliveryAPI.Controllers
 {
@@ -11,11 +12,16 @@ namespace FoodDeliveryAPI.Controllers
     {
         private readonly IConfiguration _configuration;
         private readonly ILogger<OrderController> _logger;
+        private AuditService _auditService;
+        private OrderServices _orderService;
 
         public OrderController(ILogger<OrderController> logger, IConfiguration configuration)
         {
             _logger = logger;
             _configuration = configuration;
+            _orderService = new OrderServices();
+            _auditService = new AuditService();
+            _auditService.Subscribe(_orderService);
         }
 
         // get all orders 
@@ -87,6 +93,12 @@ namespace FoodDeliveryAPI.Controllers
             return order;
         }
 
+        [HttpGet("totalOrder/{orderId}")]
+        public IActionResult GetTotal(int orderId) 
+        {
+          decimal total = _orderService.GetTotal(orderId);
+          return Ok(total);
+        }
 
         // POST api/<RestaurantController>
         [HttpPost]
