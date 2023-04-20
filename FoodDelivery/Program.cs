@@ -315,7 +315,7 @@ namespace FoodDelivery
                 if(res == "Y")
                 {
                     Console.WriteLine(order.personeelId);
-                  await confirmOrder(order.personeelId);
+                    await confirmOrder(order.personeelId);
                 }
                 else
                 {
@@ -350,13 +350,7 @@ namespace FoodDelivery
 
         public static async Task confirmOrder(int deliveryId)
         {
-            await getDeliveryPersonel(deliveryId);
-
-            Console.WriteLine("You order has been placed and will be delivered by: ");
-            Console.WriteLine("Name: " + deliveryPersonnel.PersonnelName);
-            Console.WriteLine("Contact: " + deliveryPersonnel.PersonnelContactNumber);
-
-
+            Console.WriteLine("You order has been placed.");
         }
 
         public static async Task getDeliveryPersonel(int deliveryId)
