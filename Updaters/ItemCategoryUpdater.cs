@@ -18,9 +18,9 @@ namespace FoodDeliveryAPI.Updaters
         }
         public static event EventHandler<UpdateItemCategoryArgs>? UpdateItemCategoryEvent;
 
-        [HttpPost("itemCategory/{parentId}")]
-        public bool UpdateItemCategory([FromBody] string category, int parentId)
-        // public bool UpdateItemCategory(string category, int parentId)
+        // [HttpPost("itemCategory/{parentId}")]
+        // public bool UpdateItemCategory([FromBody] string category, int parentId)
+        public bool UpdateItemCategory(string category, int parentId)
         {
             int itemCategoryId = ItemCategoryController.GetIdByName(category);
             if (itemCategoryId != 0)
