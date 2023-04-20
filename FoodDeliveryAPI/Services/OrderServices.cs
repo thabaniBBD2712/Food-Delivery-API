@@ -47,6 +47,35 @@ namespace FoodDeliveryAPI.Services
       }
       return 0;
     }
+
+        private List<OrderItemSummary> GetOrderItemSummaries(int id)
+        {
+
+            List<OrderItemSummary> orderItemSummaries = new List<OrderItemSummary>();
+            string sqlStatement = @"
+                SELECT 
+                OI.orderItemQuantity, OI.orderItemPrice, II.itemName, II.itemDescription
+                FROM [OrderItem] OI
+                JOIN [ItemInformation] II	ON OI.itemInformationId = II.itemInformationId
+                WHERE orderId = @order_id";
+            using (SqlCommand command = new SqlCommand(sqlStatement, _connection))
+            {
+                command.Parameters.AddWithValue("orderId", id);
+                SqlDataReader reader = command.ExecuteReader();
+                
+                while (reader.Read())
+                {
+                    OrderItemSummary itemSummary = new OrderItemSummary();
+                    itemSummary.OrderItemName = reader.GetString("ItemName");
+                    itemSummary.OrderItemDescription = reader.GetString("ItemDescription");
+                    itemSummary.OrderItemPrice = reader.GetDecimal("orderItemPrice");
+                    itemSummary.OrderItemQty = reader.GetInt32("orderItemQuantity");
+                    orderItemSummaries.Add(itemSummary);
+                }
+            }
+
+            return orderItemSummaries;
+        } 
     
     private OrderSummary OrderSummary(int id)
     {

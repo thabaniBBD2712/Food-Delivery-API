@@ -20,8 +20,22 @@
     public decimal TotalValue { get; set; }
   }
 
-  public class OrderItemSummary
+
+    /**
+     * 
+SELECT 
+OI.orderItemId, OI.orderItemQuantity, OI.orderItemPrice, II.itemName, II.itemDescription
+FROM [OrderItem] OI
+JOIN [ItemInformation] II	ON OI.itemInformationId = II.itemInformationId
+WHERE orderId = 7
+     */
+    public class OrderItemSummary
   {
+        public string OrderItemName { get; set; }
+        public string OrderItemDescription { get; set; }   
+        public Decimal OrderItemPrice { get; set; }
+        public Int32 OrderItemQty { get; set; }
+        
 
   }
 }
