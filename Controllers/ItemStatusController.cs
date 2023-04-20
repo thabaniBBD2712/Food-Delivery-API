@@ -64,7 +64,7 @@ namespace FoodDeliveryAPI.Controllers
             }
         }
 
-        public int GetIdByName(string name)
+        public static int GetIdByName(string name)
         {
             using (SqlCommand command = new SqlCommand(
                 @"SELECT TOP (1) [itemStatusId]
