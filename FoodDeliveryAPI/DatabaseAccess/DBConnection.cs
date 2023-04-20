@@ -21,7 +21,7 @@ namespace FoodDeliveryAPI.DatabaseAccess
             var config = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", optional: false)
                 .Build();
-            string connectionString = config.GetConnectionString("FoodDeliveryDB");
+            string connectionString = config.GetConnectionString("FoodDB");
             _connection = new SqlConnection(connectionString);
             _connection.Open();
         }
