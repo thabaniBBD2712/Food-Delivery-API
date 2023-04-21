@@ -18,9 +18,9 @@ namespace FoodDeliveryAPI.Updaters
         }
         public static event EventHandler<UpdateOrderStatusArgs>? UpdateOrderStatusEvent;
 
-        // [HttpPost("orderStatus/{parentId}")]
-        // public bool UpdateOrderStatus([FromBody] string status, int parentId)
-        public bool UpdateOrderStatus(string status, int parentId)
+        [HttpPost("orderStatus/{parentId}")]
+        public bool UpdateOrderStatus([FromBody] string status, int parentId)
+        // public bool UpdateOrderStatus(string status, int parentId)
         {
             int orderStatusId = OrderStatusController.GetIdByName(status);
             if (orderStatusId != 0)
